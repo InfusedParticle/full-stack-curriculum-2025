@@ -34,6 +34,71 @@
   #weather-container {
     height: 60%;
     width: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  #temperature-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  #temperature {
+    font-size: 10vw;
+  }
+
+  #degrees {
+    font-size: 4vw;
+  }
+
+  #week-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .day-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    border-radius: 5px;
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.8));
+  }
+
+  .left-day {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 4px;
+  }
+
+  .day-text {
+    font-size: larger;
+  }
+
+  .right-day {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+    margin-right: 5px;
+    padding: 4px;
+  }
+
+  .line {
+    background-color: #3f3f3f;
+    height: 4px;
+    border-radius: 2px;
+    margin: 0px 10px;
+    width: 50%;
   }
   
   #side-container {

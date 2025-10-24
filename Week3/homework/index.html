@@ -10,6 +10,25 @@
 <body>
 	<div id='main-container'>
 		<div id='weather-container'>
+			<h1 id="city-name">Austin, Texas</h1>
+			<div id="temperature-container">
+				<p id="temperature">92</p> <p id="degrees">°</p>
+			</div>
+
+			<div id="week-container">
+				<div class="day-container">
+					<div class="left-day">
+						<img src="./icons/01d.svg" width="9%">
+						<h4 class="day-text">Monday</h4>
+					</div>
+
+					<div class="right-day">
+						<p class="low">74°</p>
+						<div class="line"></div>
+						<p class="high">99°</p>
+					</div>
+				</div>
+			</div>
 		</div> 
 	</div>
 	<div id='side-container'>
@@ -23,7 +42,7 @@
 
 <script>
 		// USE YOUR OWN API KEY
-		const apiKey = "";
+		const apiKey = "ee0053ac320abc9b460848168318dd6c";
 
         // variable that stores the city that is chosen
 		let city;
@@ -48,7 +67,7 @@
 			let searchInput = document.querySelector("#search-input").value;
 			if (searchInput) {
 				// creates the API call with the value from the search input as a query
-				let apiCall = `https://api.openweathermap.org/geo/1.0/direct?q=${searchInput},,US&limit=5&appid=${apiKey}`;
+				let apiCall = `http://api.openweathermap.org/geo/1.0/direct?q=${searchInput},US&limit=5&appid=${apiKey}`;
 				// calls the API
 				fetch(apiCall)
 					.then((response) => 
@@ -103,6 +122,41 @@
 			//printing the city object to the console
 			console.log(city);
             // BEGIN CODING HERE
+			let weatherApiCall = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+			fetch(weatherApiCall)
+			.then(response => response.json())
+			.then(data => renderWeatherData(city, data))
+			.catch(error => console.log(error));
+		}
+
+		function renderWeatherData(cityObject, data) {
+			const degreeSymbol = "°";
+			let curIndex = 0;
+			for(let i = 0; i < 5; i++) {
+				let high = data['list'][curIndex]['main']['temp_max'];
+				let low = data['list'][curIndex]['main']['temp_min'];
+				let icon = data['list'][curIndex]['weather']['icon'];
+				for(let timestamp = 0; timestamp < 8; timestamp++) {
+					let timeStampData = data['list'][curIndex];
+					console.log(timeStampData['dt']);
+					let dateSeconds = new Date(timeStampData['dt'] * 1000);
+					console.log(dateSeconds);
+					let timestampHigh = timeStampData['main']['temp_max'];
+					let timestampLow = timeStampData['main']['temp_min'];
+					low = Math.min(low, timestampLow);
+					high = Math.max(high, timestampHigh);
+					curIndex++;
+				}
+			}
+			console.log(data);
+		}
+		
+		function createDayContainer(dayIndex, weatherData) {
+			const week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+			const day = week[dayIndex];
+			const high = weatherData.high;
+			const low = weatherData.low;
+			const imageIndex = weatherData.imageIndex;
 		}
 	</script>
 </html>
