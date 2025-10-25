@@ -59,6 +59,7 @@
   #week-container {
     display: flex;
     flex-direction: column;
+    gap: 2vh
   }
 
   .day-container {
@@ -79,6 +80,10 @@
     padding: 4px;
   }
 
+  .weather-icon {
+    width: 9%;
+  }
+
   .day-text {
     font-size: larger;
   }
@@ -88,7 +93,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    width: 20%;
+    width: 30%;
     margin-right: 5px;
     padding: 4px;
   }
