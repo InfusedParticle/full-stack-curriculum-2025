@@ -13,4 +13,15 @@
 #weather-container {
   height: 60%;
   width: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  text-align: center;
+}
+
+#week-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh
 }

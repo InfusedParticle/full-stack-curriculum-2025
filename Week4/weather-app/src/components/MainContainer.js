@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "../styles/MainContainer.css"; // Import the CSS file for MainContainer
 
+import CurrentTemperature from "./CurrentTemperature";
+import WeatherDay from "./WeatherDay";
+
+const apiKey = "[redacted]";
+
 function MainContainer(props) {
 
   function formatDate(daysFromNow = 0) {
@@ -28,7 +33,9 @@ function MainContainer(props) {
   (e.g., 'weather') and its corresponding setter function (e.g., 'setWeather'). The initial state can be 
   null or an empty object.
   */
-  
+
+  const [weather, setWeather] = useState(null);
+  const [forecast, setForecast] = useState(null);
   
   /*
   STEP 3: Fetch Weather Data When City Changes.
@@ -43,11 +50,81 @@ function MainContainer(props) {
   After fetching the data, use the 'setWeather' function from the 'useState' hook to set the weather data 
   in your state.
   */
+
+  useEffect(() => {
+      if(props.selectedCity === null) {
+        return;
+      }
+
+      const {lat, lon} = props.selectedCity;
+
+			let forecastApiCall = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+			fetch(forecastApiCall)
+			.then(response => response.json())
+			.then(data => setWeather(data))
+			.catch(error => console.log(error));
+
+			let weatherApiCall = `http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}`;
+			fetch(weatherApiCall)
+			.then(response => response.json())
+			.then(data => setForecast(data))
+			.catch(error => console.log(error));
+  }, [props.selectedCity])
   
+  if(weather === null || forecast === null) {
+    return (
+      <div id="main-container">
+        <div id="weather-container">
+          
+        </div>
+      </div>
+    )
+  }
+
+  console.log(weather);
   
+  const getFahrenheitFromKelvin = (kelvin) => {
+    const celsius = kelvin - 273;
+    const fahrenheit = Math.round(celsius * 1.8) + 32;
+    return fahrenheit;
+  }
+
+  const week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  let weatherArr = [];
+  let curIndex = 0;
+  let dayIndex = new Date().getDay();
+  for(let i = 0; i < 5; i++) {
+    let low = weather['list'][curIndex]['main']['temp_min'];
+    let high = weather['list'][curIndex]['main']['temp_max'];
+    let icon = weather['list'][curIndex]['weather'][0]['icon'];
+    for(let timestamp = 0; timestamp < 8; timestamp++) {
+      let timestampData = weather['list'][curIndex];
+      let timestampHigh = timestampData['main']['temp_max'];
+      let timestampLow = timestampData['main']['temp_min'];
+      low = Math.min(low, timestampLow);
+      high = Math.max(high, timestampHigh);
+      curIndex++;
+    }
+    low = getFahrenheitFromKelvin(low);
+    high = getFahrenheitFromKelvin(high);
+    let weatherParams = {"day": week[dayIndex], "low": low, "high": high, "icon": `../icons/${icon}.svg`};
+    weatherArr[i] = weatherParams;
+    dayIndex = (dayIndex + 1) % 7;
+  }
+
   return (
     <div id="main-container">
       <div id="weather-container">
+        <h1 id="city-name">{props.selectedCity.fullName}</h1>
+        <CurrentTemperature temperature={getFahrenheitFromKelvin(forecast['main']['temp'])}></CurrentTemperature>
+        <div id="week-container">
+          <WeatherDay data={weatherArr[0]}></WeatherDay>
+          <WeatherDay data={weatherArr[1]}></WeatherDay>
+          <WeatherDay data={weatherArr[2]}></WeatherDay>
+          <WeatherDay data={weatherArr[3]}></WeatherDay>
+          <WeatherDay data={weatherArr[4]}></WeatherDay>
+        </div>
         {/* 
         STEP 4: Display Weather Data.
         

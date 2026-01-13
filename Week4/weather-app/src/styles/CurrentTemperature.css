@@ -1,0 +1,14 @@
+  #temperature-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  #temperature {
+    font-size: 10vw;
+  }
+
+  #degrees {
+    font-size: 4vw;
+  }
