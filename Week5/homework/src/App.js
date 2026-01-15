@@ -1,7 +1,7 @@
 // Import necessary modules from their respective packages
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { AuthProvider } from "./contexts/AuthContext"; // Custom context for authentication
 import HomePage from "./components/HomePage"; // Component for the homepage
 import LoginPage from "./components/LoginPage"; // Component for the login page

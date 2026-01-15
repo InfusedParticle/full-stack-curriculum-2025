@@ -7,12 +7,12 @@ import {
   Box,
   Alert,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+// import { useTheme } from "@mui/material/styles";
 import { useAuth } from "../contexts/AuthContext";
 
 function LoginPage() {
   // Access the MUI theme for potential theme-related functionalities.
-  const theme = useTheme();
+  // const theme = useTheme();
 
   // TODO: Extract login function and error from our authentication context.
   const { loginError, login } = useAuth();

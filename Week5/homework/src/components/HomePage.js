@@ -42,7 +42,7 @@ export default function HomePage() {
           console.error("FAILED TO FETCH: ", error);
         })
     }
-  }, [currentUser])
+  }, [navigate, currentUser])
 
   function handleAddTask() {
     // Check if task name is provided and if it doesn't already exist.
