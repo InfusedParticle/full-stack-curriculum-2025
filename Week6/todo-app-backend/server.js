@@ -10,11 +10,27 @@ const app = express();
 require("dotenv").config();
 
 // Importing the Firestore database instance from firebase.js
-const db = require("./firebase");
+const { db, firebaseAuth } = require("./firebase");
 
 // Middlewares to handle cross-origin requests and to parse the body of incoming requests to JSON
 app.use(cors());
 app.use(bodyParser.json());
+
+// Auth middleware
+const auth = (req, res, next) => {
+  try {
+    const tokenId = req.get("Authorization").split("Bearer ")[1];
+    firebaseAuth.verifyIdToken(tokenId)
+      .then((decoded) => {
+        req.token = decoded;
+        next();
+      })
+      .catch((error) => res.status(401).send(error));
+  } catch (error) {
+    console.error("Firebase error: ", error);
+    res.status(400).send("Invalid token");
+  }
+};
 
 // Your API routes will go here...
 
@@ -63,7 +79,7 @@ app.get("/tasks/:user", async (req, res) => {
 
 // POST: Endpoint to add a new task
 // ...
-app.post("/tasks", async (req, res) => {
+app.post("/tasks", auth, async (req, res) => {
   try {
     const newTask = {
       user: req.body.user,
@@ -83,7 +99,7 @@ app.post("/tasks", async (req, res) => {
 
 // DELETE: Endpoint to remove a task
 // ...
-app.delete("/tasks/:id", async (req, res) => {
+app.delete("/tasks/:id", auth, async (req, res) => {
   try {
     const requestedId = req.params.id;
     const status = await db.collection("todo").doc(requestedId).delete();

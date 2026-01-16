@@ -33,7 +33,7 @@ export default function HomePage() {
     if(!currentUser) {
       navigate('/login');
     } else {
-      fetch(`http://localhost:3001/tasks/${currentUser}`)
+      fetch(`http://localhost:3001/tasks/${currentUser.uid}`)
         .then((response) => response.json())
         .then((data) => {
           setTaskList(data);
@@ -44,7 +44,7 @@ export default function HomePage() {
     }
   }, [navigate, currentUser])
 
-  function handleAddTask() {
+  async function handleAddTask() {
     // Check if task name is provided and if it doesn't already exist.
     if (newTaskName && !taskList.some((task) => task.name === newTaskName)) {
 
@@ -52,26 +52,25 @@ export default function HomePage() {
       // In addition to updating the state directly, you should send a request
       // to the API to add a new task and then update the state based on the response.
 
-      fetch("http://localhost:3001/tasks", {
-        method: "POST",
-        headers: {
-          'Content-Type': "application/json"
-        },
-        body: JSON.stringify({
-          user: currentUser,
-          name: newTaskName,
-          finished: false
+      if(currentUser) {
+        const token = await currentUser.getIdToken();
+        const response = await fetch("http://localhost:3001/tasks", {
+          method: "POST",
+          headers: {
+            'Content-Type': "application/json",
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            user: currentUser.uid,
+            name: newTaskName,
+            finished: false
+          })
         })
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        setTaskList([...taskList, data]);
-        setNewTaskName("")
-      })
-      .catch(error => console.error("FAILED TO POST: ", error));
 
-      setTaskList([...taskList, { name: newTaskName, finished: false }]);
-      setNewTaskName("");
+        const data = await response.json();
+        setTaskList([...taskList, data]);
+        setNewTaskName("");
+      }
     } else if (taskList.some((task) => task.name === newTaskName)) {
       alert("Task already exists!");
     }
@@ -88,16 +87,21 @@ export default function HomePage() {
     // TODO: Support removing/checking off todo items in your todo list through the API.
     // Similar to adding tasks, when checking off a task, you should send a request
     // to the API to update the task's status and then update the state based on the response.
-
-    fetch(`http://localhost:3001/tasks/${task.id}`, {
-      method: "DELETE",
+    currentUser.getIdToken().then(token => {
+      fetch(`http://localhost:3001/tasks/${task.id}`, {
+        method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(response => response.json())
+      .then(() => {
+        const updatedTaskList = taskList.filter((existingTask) => existingTask.id !== task.id);
+        setTaskList(updatedTaskList);
+      })
+      .catch(error => console.error("FAILED TO DELETE", error));
     })
-    .then(response => response.json())
-    .then(() => {
-      const updatedTaskList = taskList.filter((existingTask) => existingTask.id !== task.id);
-      setTaskList(updatedTaskList);
-    })
-    .catch(error => console.error("FAILED TO DELETE", error));
+    .catch(error => console.error("FAILED TO GET ID TOKEN: ", error));
   }
 
   // Function to compute a message indicating how many tasks are unfinished.

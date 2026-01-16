@@ -15,22 +15,31 @@ function LoginPage() {
   // const theme = useTheme();
 
   // TODO: Extract login function and error from our authentication context.
-  const { loginError, login } = useAuth();
+  const { loginError, login, register } = useAuth();
 
   // State to hold the username and password entered by the user.
+  const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   // TODO: Handle login function.
   const handleLogin = () => {
-    login(username, password);
+    if(isRegistering) {
+      register(username, password);
+    } else {
+      login(username, password);
+    }
   };
+
+  const handleRegister = () => {
+    setIsRegistering(!isRegistering);
+  }
 
   return (
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
-          marginTop: 8,
+          marginTop: 4,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -47,7 +56,7 @@ function LoginPage() {
           src="/longhorn.jpg"
         ></Box>
         <Typography component="h1" variant="h4" fontWeight="bold">
-          Login
+          {isRegistering ? "Register" : "Login" }
         </Typography>
         <Box sx={{ mt: 1 }}>
           <TextField
@@ -56,9 +65,9 @@ function LoginPage() {
             required
             fullWidth
             id="username"
-            label="Username"
+            label="Email"
             InputLabelProps={{ shrink: true }}
-            placeholder="admin"
+            placeholder="email@domain.com"
             autoFocus
             value={username}
             onChange={(e) => setUsername(e.target.value)}
@@ -84,9 +93,12 @@ function LoginPage() {
             sx={{ mt: 3, mb: 2 }}
             onClick={handleLogin}
           >
-            Login
+            {isRegistering ? "Register" : "Login" }
           </Button>
         </Box>
+        <Button onClick={handleRegister}>
+          { isRegistering ? "Back to login" : "Register a new account" }
+        </Button>
         {/* TODO: Display Login Error if it exists */}
         { loginError && (
           <Alert severity="error">
