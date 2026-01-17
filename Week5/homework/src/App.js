@@ -10,6 +10,7 @@ import theme from "./Theme"; // Custom theme settings
 
 // The main App component
 function App() {
+  console.log("Backend URL is:", process.env.REACT_APP_BACKEND);
   return (
     // The Router component from react-router-dom helps in handling different routes or pages
     <Router>
